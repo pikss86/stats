@@ -9,3 +9,5 @@
 
 rootProject.name = 'stats'
 include('app')
+include 'stats-plugin'
+
