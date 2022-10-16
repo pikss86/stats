@@ -4,11 +4,16 @@
 package stats;
 
 import com.google.gson.Gson;
+import stats.function.Avg;
+import stats.function.Max;
+import stats.function.StatFunc;
+import stats.function.Values;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class App {
 
@@ -27,16 +32,24 @@ public class App {
             System.out.println("Input array length 0");
             System.exit(2);
         }
-        Functions app = new Functions();
-        if ("avg".equals(functionName)) {
-            double result = app.avg(data);
-            System.out.println(result);
-        } else if ("max".equals(functionName)) {
-            long result = app.max(data);
-            System.out.println(result);
-        } else if ("values".equals(functionName)) {
-            Set<String> result = app.values(data);
-            System.out.println(gson.toJson(result));
+        Map<String, StatFunc<DataItem>> func = new HashMap<>();
+        func.put("avg", new Avg<>(
+                item -> item.ups_adv_battery_run_time_remaining,
+                avg -> System.out.println(avg.result()))
+        );
+        func.put("max", new Max<>(
+                item -> item.ups_adv_output_voltage,
+                max -> System.out.println(max.result()))
+        );
+        func.put("values", new Values<>(
+                item -> item.host,
+                values -> System.out.println(gson.toJson(values.result())))
+        );
+
+        StatFunc<DataItem> statFunc = func.get(functionName);
+        for (DataItem item : data) {
+            statFunc.collect(item);
         }
+        statFunc.print();
     }
 }

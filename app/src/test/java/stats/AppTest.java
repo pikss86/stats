@@ -6,6 +6,10 @@ package stats;
 import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.Test;
+import stats.function.Avg;
+import stats.function.Max;
+import stats.function.StatFunc;
+import stats.function.Values;
 
 import java.io.*;
 import java.net.URL;
@@ -18,6 +22,12 @@ public class AppTest {
 
     private DataItem[] data;
 
+    private void apply(StatFunc<DataItem> func) {
+        for (DataItem item : data) {
+            func.collect(item);
+        }
+    }
+
     @Before public void loadJson() throws IOException {
         Gson gson = new Gson();
         URL resource = AppTest.class.getClassLoader().getResource("testData.json");
@@ -27,17 +37,23 @@ public class AppTest {
     }
 
     @Test public void appMaxTest() {
-        assertEquals(new Functions().max(data), 241);
+        Max<DataItem> max = new Max<>(item -> item.ups_adv_output_voltage);
+        apply(max);
+        assertEquals(max.result(), 241);
     }
 
     @Test public void appAvgTest() {
-        assertEquals(new Functions().avg(data), 412712.827696618, 0);
+        Avg<DataItem> avg = new Avg<>(item -> item.ups_adv_battery_run_time_remaining);
+        apply(avg);
+        assertEquals(avg.result(), 412712.827696618, 0);
     }
 
     @Test public void appValuesTest() {
         Set<String> hosts = new HashSet<>();
         hosts.add("192.168.10.8");
         hosts.add("192.168.11.9");
-        assertEquals(new Functions().values(data), hosts);
+        Values<DataItem> values = new Values<>(item -> item.host);
+        apply(values);
+        assertEquals(values.result(), hosts);
     }
 }
