@@ -27,17 +27,17 @@ public class AppTest {
     }
 
     @Test public void appMaxTest() {
-        assertEquals(new App().max(data), 241);
+        assertEquals(new Functions().max(data), 241);
     }
 
     @Test public void appAvgTest() {
-        assertEquals(new App().avg(data), 412712.827696618, 0);
+        assertEquals(new Functions().avg(data), 412712.827696618, 0);
     }
 
     @Test public void appValuesTest() {
         Set<String> hosts = new HashSet<>();
         hosts.add("192.168.10.8");
         hosts.add("192.168.11.9");
-        assertEquals(new App().values(data), hosts);
+        assertEquals(new Functions().values(data), hosts);
     }
 }
